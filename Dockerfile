@@ -29,9 +29,9 @@ EXPOSE 8081
 
 # Environment variables (can be overridden at runtime)
 ENV SPRING_PROFILES_ACTIVE=docker
-ENV DB_URL=jdbc:mysql://mysql-libros:3306/sisdb2025
+ENV DB_URL=jdbc:mysql://mysql-training-course:3306/training_course_db
 ENV DB_USERNAME=root
-ENV DB_PASSWORD=abcd
+ENV DB_PASSWORD=root
 ENV SERVER_PORT=8081
 
 # Run the application

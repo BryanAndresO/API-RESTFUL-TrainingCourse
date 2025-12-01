@@ -1,0 +1,576 @@
+{
+	"info": {
+		"_postman_id": "training-course-api-collection",
+		"name": "TrainingCourse API - Complete CRUD Tests",
+		"description": "Colección completa de pruebas para la API RESTful de Training Courses.\nIncluye casos de éxito y manejo de errores para todas las operaciones CRUD.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Crear Curso - Éxito",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201 CREATED\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Response has id field\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('id');",
+							"    pm.environment.set(\"course_id\", jsonData.id);",
+							"});",
+							"",
+							"pm.test(\"Course name is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.courseName).to.eql(\"Spring Boot Fundamentals\");",
+							"});",
+							"",
+							"pm.test(\"Instructor is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.instructor).to.eql(\"John Doe\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"courseName\": \"Spring Boot Fundamentals\",\n    \"instructor\": \"John Doe\",\n    \"durationHours\": 40,\n    \"category\": \"Programming\",\n    \"status\": \"Active\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/training-courses",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"training-courses"
+					]
+				},
+				"description": "Crea un nuevo curso de capacitación con todos los datos válidos."
+			},
+			"response": []
+		},
+		{
+			"name": "2. Crear Curso - Error (Campos Vacíos)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400 BAD REQUEST\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Response contains validation errors\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('mensaje');",
+							"    pm.expect(jsonData).to.have.property('errores');",
+							"    pm.expect(jsonData.errores).to.be.an('array');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"courseName\": \"\",\n    \"instructor\": \"\",\n    \"durationHours\": null,\n    \"category\": \"\",\n    \"status\": \"\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/training-courses",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"training-courses"
+					]
+				},
+				"description": "Intenta crear un curso con campos vacíos para validar las reglas de validación."
+			},
+			"response": []
+		},
+		{
+			"name": "3. Crear Curso - Error (Duración Inválida)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400 BAD REQUEST\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Error mentions duration validation\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var erroresString = JSON.stringify(jsonData.errores);",
+							"    pm.expect(erroresString).to.include('durationHours');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"courseName\": \"Invalid Duration Course\",\n    \"instructor\": \"Test Instructor\",\n    \"durationHours\": -5,\n    \"category\": \"Testing\",\n    \"status\": \"Active\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/training-courses",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"training-courses"
+					]
+				},
+				"description": "Intenta crear un curso con duración negativa."
+			},
+			"response": []
+		},
+		{
+			"name": "4. Listar Todos los Cursos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response is an array\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an('array');",
+							"});",
+							"",
+							"pm.test(\"Array contains at least one course\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.length).to.be.at.least(1);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/training-courses",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"training-courses"
+					]
+				},
+				"description": "Obtiene la lista completa de cursos de capacitación."
+			},
+			"response": []
+		},
+		{
+			"name": "5. Buscar Curso por ID - Éxito",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response has all required fields\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('id');",
+							"    pm.expect(jsonData).to.have.property('courseName');",
+							"    pm.expect(jsonData).to.have.property('instructor');",
+							"    pm.expect(jsonData).to.have.property('durationHours');",
+							"    pm.expect(jsonData).to.have.property('category');",
+							"    pm.expect(jsonData).to.have.property('status');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/training-courses/{{course_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"training-courses",
+						"{{course_id}}"
+					]
+				},
+				"description": "Busca un curso específico por su ID."
+			},
+			"response": []
+		},
+		{
+			"name": "6. Buscar Curso por ID - Error 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404 NOT FOUND\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"Error message is present\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('mensaje');",
+							"    pm.expect(jsonData.mensaje).to.include('no encontrado');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/training-courses/99999",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"training-courses",
+						"99999"
+					]
+				},
+				"description": "Intenta buscar un curso con un ID que no existe."
+			},
+			"response": []
+		},
+		{
+			"name": "7. Actualizar Curso - Éxito",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Course name was updated\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.courseName).to.eql(\"Spring Boot Advanced\");",
+							"});",
+							"",
+							"pm.test(\"Duration was updated\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.durationHours).to.eql(60);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"courseName\": \"Spring Boot Advanced\",\n    \"instructor\": \"Jane Smith\",\n    \"durationHours\": 60,\n    \"category\": \"Advanced Programming\",\n    \"status\": \"Active\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/training-courses/{{course_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"training-courses",
+						"{{course_id}}"
+					]
+				},
+				"description": "Actualiza los datos de un curso existente."
+			},
+			"response": []
+		},
+		{
+			"name": "8. Actualizar Curso - Error 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404 NOT FOUND\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"Error message is present\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('mensaje');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"courseName\": \"Non-existent Course\",\n    \"instructor\": \"Nobody\",\n    \"durationHours\": 10,\n    \"category\": \"None\",\n    \"status\": \"Inactive\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/training-courses/99999",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"training-courses",
+						"99999"
+					]
+				},
+				"description": "Intenta actualizar un curso que no existe."
+			},
+			"response": []
+		},
+		{
+			"name": "9. Actualizar Curso - Error Validación",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400 BAD REQUEST\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Validation errors are present\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('errores');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"courseName\": \"\",\n    \"instructor\": \"\",\n    \"durationHours\": 0,\n    \"category\": \"\",\n    \"status\": \"\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/training-courses/{{course_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"training-courses",
+						"{{course_id}}"
+					]
+				},
+				"description": "Intenta actualizar con datos inválidos para probar validaciones."
+			},
+			"response": []
+		},
+		{
+			"name": "10. Eliminar Curso - Error 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404 NOT FOUND\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"Error message is present\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('mensaje');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/training-courses/99999",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"training-courses",
+						"99999"
+					]
+				},
+				"description": "Intenta eliminar un curso que no existe."
+			},
+			"response": []
+		},
+		{
+			"name": "11. Eliminar Curso - Éxito",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204 NO CONTENT\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});",
+							"",
+							"pm.test(\"Response body is empty\", function () {",
+							"    pm.expect(pm.response.text()).to.be.empty;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/training-courses/{{course_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"training-courses",
+						"{{course_id}}"
+					]
+				},
+				"description": "Elimina un curso existente exitosamente."
+			},
+			"response": []
+		},
+		{
+			"name": "12. Verificar Eliminación",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404 NOT FOUND\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"Course was actually deleted\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.mensaje).to.include('no encontrado');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/training-courses/{{course_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"training-courses",
+						"{{course_id}}"
+					]
+				},
+				"description": "Verifica que el curso eliminado ya no existe."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "course_id",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}

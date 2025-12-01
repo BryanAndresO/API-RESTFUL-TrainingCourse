@@ -1,11 +1,11 @@
-# 📚 API RESTful de Gestión de Libros
+# 📚 API RESTful - Training Courses
 
-[![Docker Hub](https://img.shields.io/badge/Docker%20Hub-jaco224%2Flibros--api-blue?logo=docker)](https://hub.docker.com/r/jaco224/libros-api)
+[![Docker Hub](https://img.shields.io/badge/Docker%20Hub-training--course--api-blue?logo=docker)](https://hub.docker.com/)
 [![Java](https://img.shields.io/badge/Java-17-orange?logo=java)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.12-green?logo=spring)](https://spring.io/projects/spring-boot)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?logo=mysql)](https://www.mysql.com/)
 
-> API RESTful completa para gestión de libros desarrollada con Spring Boot, dockerizada y lista para producción.
+> API RESTful completa para gestión de cursos de capacitación desarrollada con Spring Boot, dockerizada y lista para producción.
 
 ---
 
@@ -17,31 +17,32 @@ Ejecuta estos 3 comandos:
 
 ```bash
 # 1. Crear red Docker
-docker network create libros-net
+docker network create training-course-net
 
 # 2. Levantar MySQL
-docker run -d --name mysql-libros --network libros-net \
-  -e MYSQL_ROOT_PASSWORD=abcd \
-  -e MYSQL_DATABASE=sisdb2025 \
-  -p 3307:3306 mysql:8.0
+docker run -d --name mysql-training-course --network training-course-net \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -e MYSQL_DATABASE=training_course_db \
+  -p 3306:3306 mysql:8.0
 
-# 3. Ejecutar la API (desde Docker Hub)
-docker run -d --name libros-api --network libros-net \
+# 3. Construir y ejecutar la API
+cd "c:\APLICACIONES DISTRIBUIDAS\Ortiz_TrainingCourse"
+docker build -t training-course-api:1.0 .
+docker run -d --name training-course-api --network training-course-net \
   -p 8081:8081 -e SPRING_PROFILES_ACTIVE=docker \
-  -e DB_URL=jdbc:mysql://mysql-libros:3306/sisdb2025 \
-  jaco224/libros-api:latest
+  training-course-api:1.0
 ```
 
-**Probar:** Abre en navegador → http://localhost:8081/api/libros
+**Probar:** Abre en navegador → http://localhost:8081/api/training-courses
 
 ---
 
 ## 📋 Características
 
-- ✅ **CRUD Completo**: Crear, Listar, Buscar, Actualizar, Eliminar libros
-- ✅ **Validaciones**: Bean Validation con mensajes personalizados
+- ✅ **CRUD Completo**: Crear, Listar, Buscar, Actualizar, Eliminar cursos
+- ✅ **Validaciones**: Bean Validation con mensajes personalizados en español
 - ✅ **RESTful**: Códigos HTTP apropiados (200, 201, 204, 400, 404)
-- ✅ **Dockerizado**: Imagen multi-stage optimizada (356MB)
+- ✅ **Dockerizado**: Imagen multi-stage optimizada (~350MB)
 - ✅ **Base de Datos**: MySQL 8.0 containerizado
 - ✅ **Documentado**: JavaDoc completo + Colección Postman
 
@@ -66,57 +67,70 @@ docker run -d --name libros-api --network libros-net \
 
 | Método | Endpoint | Descripción | Código |
 |--------|----------|-------------|--------|
-| **GET** | `/api/libros` | Listar todos los libros | 200 |
-| **GET** | `/api/libros/{id}` | Buscar libro por ID | 200 / 404 |
-| **POST** | `/api/libros` | Crear nuevo libro | 201 / 400 |
-| **PUT** | `/api/libros/{id}` | Actualizar libro | 200 / 404 / 400 |
-| **DELETE** | `/api/libros/{id}` | Eliminar libro | 204 / 404 |
+| **GET** | `/api/training-courses` | Listar todos los cursos | 200 |
+| **GET** | `/api/training-courses/{id}` | Buscar curso por ID | 200 / 404 |
+| **POST** | `/api/training-courses` | Crear nuevo curso | 201 / 400 |
+| **PUT** | `/api/training-courses/{id}` | Actualizar curso | 200 / 404 / 400 |
+| **DELETE** | `/api/training-courses/{id}` | Eliminar curso | 204 / 404 |
 
-### Modelo de Datos: Libro
+### Modelo de Datos: Training Course
 
 ```json
 {
   "id": 1,
-  "titulo": "Cien Años de Soledad",
-  "autor": "Gabriel García Márquez",
-  "genero": "Realismo Mágico"
+  "courseName": "Spring Boot Fundamentals",
+  "instructor": "John Doe",
+  "durationHours": 40,
+  "category": "Programming",
+  "status": "Active"
 }
 ```
 
 **Validaciones:**
-- `titulo`: Obligatorio, 1-200 caracteres
-- `autor`: Obligatorio, 1-100 caracteres
-- `genero`: Obligatorio, 1-50 caracteres
+- `courseName`: Obligatorio, 1-200 caracteres
+- `instructor`: Obligatorio, 1-100 caracteres
+- `durationHours`: Obligatorio, mínimo 1 hora
+- `category`: Obligatorio, 1-100 caracteres
+- `status`: Obligatorio, 1-50 caracteres
 
 ---
 
 ## 🐳 Uso con Docker
 
-### Opción 1: Descargar de Docker Hub (Recomendado)
-
-Ya mostrado en [Inicio Rápido](#-inicio-rápido-con-docker) ↑
-
-### Opción 2: Construir localmente
+### Opción 1: Construcción Local (Recomendado)
 
 ```bash
 # 1. Clonar repositorio
-git clone https://github.com/TU_USUARIO/libros-api.git
-cd libros-api
+git clone https://github.com/BryanAndresO/Ortiz_TrainingCourse.git
+cd Ortiz_TrainingCourse
 
 # 2. Construir imagen
-docker build -t libros-api:1.0 .
+docker build -t training-course-api:1.0 .
 
-# 3. Crear red y MySQL
-docker network create libros-net
-docker run -d --name mysql-libros --network libros-net \
-  -e MYSQL_ROOT_PASSWORD=abcd \
-  -e MYSQL_DATABASE=sisdb2025 \
-  -p 3307:3306 mysql:8.0
+# 3. Crear red Docker
+docker network create training-course-net
 
-# 4. Ejecutar API
-docker run -d --name libros-api --network libros-net \
+# 4. Levantar MySQL
+docker run -d --name mysql-training-course --network training-course-net \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -e MYSQL_DATABASE=training_course_db \
+  -p 3306:3306 mysql:8.0
+
+# 5. Ejecutar API
+docker run -d --name training-course-api --network training-course-net \
   -p 8081:8081 -e SPRING_PROFILES_ACTIVE=docker \
-  libros-api:1.0
+  training-course-api:1.0
+```
+
+### Opción 2: Desde Docker Hub
+
+```bash
+# 1. Crear red y MySQL (pasos 3 y 4 de arriba)
+
+# 2. Ejecutar API desde Docker Hub
+docker run -d --name training-course-api --network training-course-net \
+  -p 8081:8081 -e SPRING_PROFILES_ACTIVE=docker \
+  TU_USUARIO_DOCKERHUB/training-course-api:latest
 ```
 
 ### Comandos Útiles
@@ -126,19 +140,25 @@ docker run -d --name libros-api --network libros-net \
 docker ps
 
 # Ver logs de la API
-docker logs libros-api
+docker logs training-course-api
+
+# Ver logs de MySQL
+docker logs mysql-training-course
 
 # Reiniciar API
-docker restart libros-api
+docker restart training-course-api
 
 # Detener todo
-docker stop libros-api mysql-libros
+docker stop training-course-api mysql-training-course
 
 # Eliminar contenedores
-docker rm libros-api mysql-libros
+docker rm training-course-api mysql-training-course
+
+# Eliminar red
+docker network rm training-course-net
 ```
 
-Ver más comandos en [DOCKER_COMMANDS.md](DOCKER_COMMANDS.md)
+**Ver más comandos:** [DOCKER_COMMANDS.md](docs/DOCKER_COMMANDS.md)
 
 ---
 
@@ -155,7 +175,8 @@ Ver más comandos en [DOCKER_COMMANDS.md](DOCKER_COMMANDS.md)
 ```bash
 # 1. Crear base de datos
 mysql -u root -p
-CREATE DATABASE sisdb2025;
+CREATE DATABASE training_course_db;
+EXIT;
 
 # 2. Compilar y ejecutar
 mvn clean install
@@ -171,18 +192,20 @@ La API estará en: http://localhost:8081
 ### Importar colección
 
 1. Abrir Postman
-2. Import → Seleccionar `Libros-API-Collection.postman_collection.json`
-3. Ejecutar las 11 pruebas
+2. Import → Seleccionar `TrainingCourse-API-Collection.postman_collection.json`
+3. Ejecutar las 12 pruebas
 
 ### Pruebas incluidas
 
-- ✅ Crear libro (exitoso y con errores)
-- ✅ Listar todos
+- ✅ Crear curso (exitoso y con errores de validación)
+- ✅ Crear con duración inválida (negativa o cero)
+- ✅ Listar todos los cursos
 - ✅ Buscar por ID (exitoso y 404)
 - ✅ Actualizar (exitoso, 404, validación)
 - ✅ Eliminar (exitoso y 404)
+- ✅ Verificar eliminación
 
-**Total: 11 pruebas con 25+ assertions**
+**Total: 12 pruebas con 30+ assertions**
 
 ---
 
@@ -191,15 +214,15 @@ La API estará en: http://localhost:8081
 ```
 src/main/java/com/espe/test/
 ├── Controllers/
-│   └── LibroController.java      # Endpoints REST
+│   └── TrainingCourseController.java     # Endpoints REST
 ├── models/entities/
-│   └── Libro.java                 # Entidad JPA + Validaciones
+│   └── TrainingCourse.java               # Entidad JPA + Validaciones
 ├── repositories/
-│   ├── LibroRepository.java       # Repository JPA
-│   └── LibroServicesImpl.java     # Implementación Service
+│   └── TrainingCourseRepository.java     # Repository JPA
 ├── services/
-│   └── LibroService.java          # Interface Service
-└── TestApplication.java           # Clase principal
+│   ├── TrainingCourseService.java        # Interface Service
+│   └── TrainingCourseServiceImpl.java    # Implementación Service
+└── TestApplication.java                   # Clase principal
 ```
 
 ### Arquitectura en Capas
@@ -208,6 +231,7 @@ src/main/java/com/espe/test/
 Controller → Service → Repository → Database
     ↓          ↓           ↓           ↓
    REST      Lógica    Acceso      MySQL
+                                (training_course tabla)
 ```
 
 ---
@@ -219,22 +243,101 @@ Controller → Service → Repository → Database
 | Variable | Default | Descripción |
 |----------|---------|-------------|
 | `SERVER_PORT` | 8081 | Puerto del servidor |
-| `DB_URL` | localhost:3307 | URL de MySQL |
+| `DB_URL` | localhost:3306/training_course_db | URL de MySQL |
 | `DB_USERNAME` | root | Usuario MySQL |
-| `DB_PASSWORD` | abcd | Contraseña MySQL |
+| `DB_PASSWORD` | root | Contraseña MySQL |
 
 ### Perfiles
 
 - **default**: Ejecución local
-- **docker**: Ejecución en contenedor (automático)
+- **docker**: Ejecución en contenedor
 
 ---
 
 ## 📖 Documentación Adicional
 
-- [DOCKER_COMMANDS.md](DOCKER_COMMANDS.md) - Guía completa de Docker
-- [docs/REPORTE_TECNICO.md](docs/REPORTE_TECNICO.md) - Reporte técnico completo
-- [Colección Postman](Libros-API-Collection.postman_collection.json) - Pruebas API
+- [DOCKER_COMMANDS.md](docs/DOCKER_COMMANDS.md) - Guía completa de Docker
+- [TECHNICAL_REPORT.pdf](docs/TECHNICAL_REPORT.pdf) - Reporte técnico completo
+- [Colección Postman](TrainingCourse-API-Collection.postman_collection.json) - Pruebas completas
+
+---
+
+## 🐳 Publicar en Docker Hub
+
+```bash
+# 1. Login
+docker login
+
+# 2. Etiquetar imagen
+docker tag training-course-api:1.0 TU_USUARIO/training-course-api:latest
+docker tag training-course-api:1.0 TU_USUARIO/training-course-api:1.0
+
+# 3. Publicar
+docker push TU_USUARIO/training-course-api:latest
+docker push TU_USUARIO/training-course-api:1.0
+
+# 4. Verificar en Docker Hub
+# https://hub.docker.com/r/TU_USUARIO/training-course-api
+```
+
+---
+
+## 🗄️ Base de Datos
+
+### Tabla Creada Automáticamente
+
+La tabla `training_course` se crea automáticamente por Hibernate con esta estructura:
+
+```sql
+CREATE TABLE training_course (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    course_name VARCHAR(200) NOT NULL,
+    instructor VARCHAR(100) NOT NULL,
+    duration_hours INT NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    status VARCHAR(50) NOT NULL
+);
+```
+
+### Conectarse a MySQL (Docker)
+
+```bash
+docker exec -it mysql-training-course mysql -u root -p
+# Contraseña: root
+
+USE training_course_db;
+SHOW TABLES;
+DESCRIBE training_course;
+SELECT * FROM training_course;
+```
+
+---
+
+## 🎯 Verificación del Sistema
+
+### Verificar que todo funciona
+
+```bash
+# 1. Verificar contenedores
+docker ps
+
+# 2. Verificar API responde
+curl http://localhost:8081/api/training-courses
+
+# 3. Crear un curso de prueba
+curl -X POST http://localhost:8081/api/training-courses \
+  -H "Content-Type: application/json" \
+  -d '{
+    "courseName": "Docker y Kubernetes",
+    "instructor": "María López",
+    "durationHours": 50,
+    "category": "DevOps",
+    "status": "Active"
+  }'
+
+# 4. Verificar en la base de datos
+docker exec -it mysql-training-course mysql -u root -p -e "SELECT * FROM training_course_db.training_course;"
+```
 
 ---
 
@@ -256,16 +359,29 @@ Este proyecto es de código abierto y está disponible para fines educativos.
 
 ## 👤 Autor
 
-**Tu Nombre**
-- GitHub: [@BryanAndresO](https://github.com/BryanAndresO/-API-RESTFUL-LIBRO.git)
-- Docker Hub: [jaco224/libros-api](https://hub.docker.com/r/jaco224/libros-api)
+**Bryan Andrés Ortiz**
+- GitHub: [@BryanAndresO](https://github.com/BryanAndresO)
+- Proyecto: [Ortiz_TrainingCourse](https://github.com/BryanAndresO/Ortiz_TrainingCourse)
 
 ---
 
 ## ⭐ Agradecimientos
 
-Desarrollado para el curso de **Aplicaciones Distribuidas**.
+Desarrollado para el curso de **Aplicaciones Distribuidas** - ESPE.
 
 ---
 
-**¿Problemas?** Abre un [issue](https://github.com/BryanAndresO/libros-api/issues)
+## 📊 Checklist de Entregables
+
+- [ ] ✅ Proyecto completo en GitHub
+- [ ] ✅ Imagen publicada en Docker Hub
+- [ ] ✅ Colección Postman exportada
+- [ ] ✅ Informe ejecutivo en PDF (LaTeX compilado)
+- [ ] ✅ README con instrucciones completas
+- [ ] ✅ Documentación Docker detallada
+- [ ] ✅ Código funcionando localmente
+- [ ] ✅ Código funcionando en Docker
+
+---
+
+**¿Problemas?** Abre un [issue](https://github.com/BryanAndresO/Ortiz_TrainingCourse/issues) o consulta [DOCKER_COMMANDS.md](docs/DOCKER_COMMANDS.md) para troubleshooting.
