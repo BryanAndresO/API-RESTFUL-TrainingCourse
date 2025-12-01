@@ -254,13 +254,7 @@ Controller → Service → Repository → Database
 
 ---
 
-## 📖 Documentación Adicional
 
-- [DOCKER_COMMANDS.md](docs/DOCKER_COMMANDS.md) - Guía completa de Docker
-- [TECHNICAL_REPORT.pdf](docs/TECHNICAL_REPORT.pdf) - Reporte técnico completo
-- [Colección Postman](TrainingCourse-API-Collection.postman_collection.json) - Pruebas completas
-
----
 
 ## 🐳 Publicar en Docker Hub
 
@@ -276,9 +270,6 @@ docker tag training-course-api:1.0 TU_USUARIO/training-course-api:1.0
 docker push TU_USUARIO/training-course-api:latest
 docker push TU_USUARIO/training-course-api:1.0
 
-# 4. Verificar en Docker Hub
-# https://hub.docker.com/r/TU_USUARIO/training-course-api
-```
 
 ---
 
@@ -313,7 +304,7 @@ SELECT * FROM training_course;
 
 ---
 
-## 🎯 Verificación del Sistema
+##  Verificación del Sistema
 
 ### Verificar que todo funciona
 
@@ -339,49 +330,3 @@ curl -X POST http://localhost:8081/api/training-courses \
 docker exec -it mysql-training-course mysql -u root -p -e "SELECT * FROM training_course_db.training_course;"
 ```
 
----
-
-## 🤝 Contribuir
-
-1. Fork el proyecto
-2. Crear rama: `git checkout -b feature/nueva-funcionalidad`
-3. Commit: `git commit -m 'Agregar nueva funcionalidad'`
-4. Push: `git push origin feature/nueva-funcionalidad`
-5. Abrir Pull Request
-
----
-
-## 📝 Licencia
-
-Este proyecto es de código abierto y está disponible para fines educativos.
-
----
-
-## 👤 Autor
-
-**Bryan Andrés Ortiz**
-- GitHub: [@BryanAndresO](https://github.com/BryanAndresO)
-- Proyecto: [Ortiz_TrainingCourse](https://github.com/BryanAndresO/Ortiz_TrainingCourse)
-
----
-
-## ⭐ Agradecimientos
-
-Desarrollado para el curso de **Aplicaciones Distribuidas** - ESPE.
-
----
-
-## 📊 Checklist de Entregables
-
-- [ ] ✅ Proyecto completo en GitHub
-- [ ] ✅ Imagen publicada en Docker Hub
-- [ ] ✅ Colección Postman exportada
-- [ ] ✅ Informe ejecutivo en PDF (LaTeX compilado)
-- [ ] ✅ README con instrucciones completas
-- [ ] ✅ Documentación Docker detallada
-- [ ] ✅ Código funcionando localmente
-- [ ] ✅ Código funcionando en Docker
-
----
-
-**¿Problemas?** Abre un [issue](https://github.com/BryanAndresO/Ortiz_TrainingCourse/issues) o consulta [DOCKER_COMMANDS.md](docs/DOCKER_COMMANDS.md) para troubleshooting.
