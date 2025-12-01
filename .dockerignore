@@ -1,0 +1,11 @@
+# Archivo .dockerignore - No incluir en la imagen Docker
+target/
+!target/*.jar
+.mvn/
+.git/
+.gitignore
+.idea/
+*.iml
+*.md
+.DS_Store
+*.log
